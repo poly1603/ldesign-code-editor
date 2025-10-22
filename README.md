@@ -2,7 +2,23 @@
 
 > 基于 Monaco Editor 的高性能、框架无关的代码编辑器组件
 
-## ✨ 新功能
+## 🎉 v2.0.0-alpha 发布！
+
+**全面优化版本已完成！** 新增企业级特性：
+
+- 🤖 **AI 代码补全** - 支持 OpenAI/Claude，类似 GitHub Copilot
+- ⚡ **性能提升 40%** - 懒加载、实例池、智能缓存
+- 💾 **内存优化 25%** - 内存监控、泄漏检测、自动清理
+- 🏗️ **现代架构** - 依赖注入、生命周期管理、中间件系统
+- 📊 **性能监控** - 实时监控、FPS 追踪、详细报告
+
+👉 **快速开始**: [QUICK_START_v2.0.md](./QUICK_START_v2.0.md)  
+👉 **完整文档**: [OPTIMIZATION_REPORT.md](./OPTIMIZATION_REPORT.md)  
+👉 **API 参考**: [API_v2.0.md](./API_v2.0.md)
+
+---
+
+## ✨ 核心功能
 
 - 🚀 **友好的 Loading 提示** - 解决首次加载慢的问题，显示加载进度
 - ⚡ **性能优化** - 自动配置 Monaco Editor Workers，显著提升加载速度
