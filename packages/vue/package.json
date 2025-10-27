@@ -1,0 +1,59 @@
+{
+  "name": "@ldesign/code-editor-vue",
+  "version": "2.0.0",
+  "description": "Vue 3 components for @ldesign/code-editor-core",
+  "type": "module",
+  "main": "./dist/index.umd.js",
+  "module": "./dist/index.es.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.umd.js"
+    },
+    "./style.css": "./dist/style.css"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "build:types": "vue-tsc --declaration --emitDeclarationOnly --outDir dist",
+    "preview": "vite preview",
+    "lint": "eslint src --ext .ts,.vue --fix",
+    "type-check": "vue-tsc --noEmit",
+    "test": "vitest",
+    "clean": "rm -rf dist node_modules"
+  },
+  "keywords": [
+    "vue",
+    "vue3",
+    "code-editor",
+    "monaco-editor"
+  ],
+  "author": "",
+  "license": "MIT",
+  "peerDependencies": {
+    "vue": "^3.5.0",
+    "@ldesign/code-editor-core": "workspace:*",
+    "monaco-editor": "^0.52.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "@vue/eslint-config-typescript": "^13.0.0",
+    "eslint": "^8.57.0",
+    "eslint-plugin-vue": "^9.20.0",
+    "monaco-editor": "^0.52.0",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.3",
+    "vite-plugin-dts": "^4.3.0",
+    "vitest": "^1.0.0",
+    "vue": "^3.5.13",
+    "vue-tsc": "^2.1.10"
+  }
+}
+

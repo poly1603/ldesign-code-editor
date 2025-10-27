@@ -1,0 +1,54 @@
+{
+  "name": "@ldesign/code-editor-core",
+  "version": "2.0.0",
+  "description": "Core code editor functionality based on Monaco Editor",
+  "type": "module",
+  "main": "./dist/index.umd.js",
+  "module": "./dist/index.es.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.umd.js"
+    },
+    "./style.css": "./dist/style.css"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "build:types": "tsc --declaration --emitDeclarationOnly --outDir dist",
+    "preview": "vite preview",
+    "lint": "eslint src --ext .ts --fix",
+    "type-check": "tsc --noEmit",
+    "test": "vitest",
+    "clean": "rm -rf dist node_modules"
+  },
+  "keywords": [
+    "monaco-editor",
+    "code-editor",
+    "typescript",
+    "framework-agnostic"
+  ],
+  "author": "",
+  "license": "MIT",
+  "peerDependencies": {
+    "monaco-editor": "^0.52.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.57.0",
+    "monaco-editor": "^0.52.0",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.3",
+    "vite-plugin-dts": "^4.3.0",
+    "vitest": "^1.0.0"
+  }
+}
+
