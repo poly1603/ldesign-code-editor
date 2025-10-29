@@ -1,26 +1,22 @@
-// 导出组件
-import CodeEditor from './components/CodeEditor.vue'
+import type { App } from 'vue'
+import CodeEditorComponent from './CodeEditor.vue'
 
-export { CodeEditor }
-export default CodeEditor
+// 导出组件
+export const CodeEditor = CodeEditorComponent
 
 // 导出 Composable
-export { useCodeEditor } from './composables/useCodeEditor'
-export type { UseCodeEditorOptions, UseCodeEditorReturn } from './composables/useCodeEditor'
+export { useCodeEditor, createEditor } from './useCodeEditor'
 
-// 重新导出核心包的类型和功能
-export * from '@ldesign/code-editor-core'
+// 导出类型
+export type * from '../../types'
 
-// Vue 插件安装
-import type { App } from 'vue'
-
-export const install = (app: App): void => {
-  app.component('CodeEditor', CodeEditor)
-  app.component('LCodeEditor', CodeEditor)
+// Vue 插件安装函数
+export function install(app: App) {
+  app.component('LdCodeEditor', CodeEditorComponent)
 }
 
-// 支持 Vue.use()
-export const CodeEditorPlugin = {
-  install
+// 默认导出
+export default {
+  install,
+  CodeEditor: CodeEditorComponent
 }
-

@@ -1,0 +1,59 @@
+{
+  "name": "@ldesign/code-editor-angular",
+  "version": "2.0.0",
+  "description": "Angular components for @ldesign/code-editor-core",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "ldesign-builder build",
+    "dev": "ldesign-builder dev",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "type-check": "tsc --noEmit",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "clean": "rimraf dist"
+  },
+  "keywords": [
+    "angular",
+    "code-editor",
+    "monaco-editor"
+  ],
+  "author": "LDesign Team",
+  "license": "MIT",
+  "peerDependencies": {
+    "@ldesign/code-editor-core": "workspace:*",
+    "monaco-editor": "^0.52.0",
+    "@angular/core": "^18.0.0",
+    "@angular/common": "^18.0.0"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^6.0.0",
+    "@ldesign/builder": "workspace:*",
+    "@ldesign/code-editor-core": "workspace:*",
+    "@types/node": "^22.10.2",
+    "@vitest/coverage-v8": "^1.6.0",
+    "@vitest/ui": "^1.0.0",
+    "eslint": "^9.18.0",
+    "monaco-editor": "^0.52.0",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.7.3",
+    "vitest": "^1.0.0",
+    "@angular/core": "^18.0.0",
+    "@angular/common": "^18.0.0"
+  }
+}

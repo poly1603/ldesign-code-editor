@@ -2,28 +2,7 @@
 // 核心导出
 // ============================================================
 export { createCodeEditor, CodeEditor } from './core/CodeEditor'
-
-// ============================================================
-// 性能优化
-// ============================================================
-export { EditorPool } from './core/EditorPool'
-export type { PoolOptions, PoolStats } from './core/EditorPool'
-
-export { MemoryManager, globalMemoryManager } from './core/MemoryManager'
-export type { MemoryStats, MemoryThreshold, MemoryCallback } from './core/MemoryManager'
-
-export {
-  LazyLoader,
-  languageLoader,
-  themeLoader,
-  pluginLoader,
-} from './core/LazyLoader'
-
-export {
-  PerformanceMonitor,
-  globalPerformanceMonitor,
-  Measure,
-} from './core/PerformanceMonitor'
+export { createEnhancedCodeEditor, EnhancedCodeEditor } from './core/EnhancedCodeEditor'
 
 // ============================================================
 // 架构核心
@@ -42,10 +21,27 @@ export {
 } from './core/Middleware'
 
 // ============================================================
-// 扩展系统
+// 性能优化
 // ============================================================
-export { ExtensionLoader, extensionLoader } from './core/ExtensionLoader'
-export { ExtensionSandbox } from './core/ExtensionSandbox'
+export {
+  LazyLoader,
+  languageLoader,
+  themeLoader,
+  pluginLoader,
+} from './core/LazyLoader'
+
+export {
+  PerformanceMonitor,
+  globalPerformanceMonitor,
+  Measure,
+} from './core/PerformanceMonitor'
+
+export {
+  MemoryManager,
+  globalMemoryManager,
+} from './core/MemoryManager'
+
+export { EditorPool } from './core/EditorPool'
 
 // ============================================================
 // 工具函数
@@ -116,6 +112,12 @@ export { SnippetManager } from './features/snippets/SnippetManager'
 export type { Snippet, SnippetCategory } from './features/snippets/SnippetLibrary'
 
 // ============================================================
+// 扩展系统
+// ============================================================
+export { ExtensionLoader, extensionLoader } from './core/ExtensionLoader'
+export { ExtensionSandbox } from './core/ExtensionSandbox'
+
+// ============================================================
 // 主题系统
 // ============================================================
 export { ThemeManager, themeManager } from './utils/themes'
@@ -165,4 +167,3 @@ export * from './types'
 
 // Monaco Editor 类型导出
 export type { editor, languages, IRange, IPosition, Position } from 'monaco-editor'
-

@@ -19,14 +19,15 @@
     "README.md"
   ],
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "build:types": "tsc --declaration --emitDeclarationOnly --outDir dist",
-    "preview": "vite preview",
-    "lint": "eslint src --ext .ts --fix",
+    "build": "ldesign-builder build",
+    "dev": "ldesign-builder dev",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "type-check": "tsc --noEmit",
     "test": "vitest",
-    "clean": "rm -rf dist node_modules"
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "clean": "rimraf dist"
   },
   "keywords": [
     "monaco-editor",
@@ -40,14 +41,15 @@
     "monaco-editor": "^0.52.0"
   },
   "devDependencies": {
+    "@antfu/eslint-config": "^6.0.0",
+    "@ldesign/builder": "workspace:*",
     "@types/node": "^22.10.2",
-    "@typescript-eslint/eslint-plugin": "^7.0.0",
-    "@typescript-eslint/parser": "^7.0.0",
-    "eslint": "^8.57.0",
+    "@vitest/coverage-v8": "^1.6.0",
+    "@vitest/ui": "^1.0.0",
+    "eslint": "^9.18.0",
     "monaco-editor": "^0.52.0",
-    "typescript": "^5.7.2",
-    "vite": "^6.0.3",
-    "vite-plugin-dts": "^4.3.0",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.7.3",
     "vitest": "^1.0.0"
   }
 }
