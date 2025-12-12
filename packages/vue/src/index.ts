@@ -1,22 +1,57 @@
+// Components
+export { default as CodeEditor } from './components/CodeEditor.vue'
+export { default as DiffEditor } from './components/DiffEditor.vue'
+
+// Composables
+export { useCodeEditor } from './composables/useCodeEditor'
+export { useDiffEditor } from './composables/useDiffEditor'
+
+// Directive
+export { vCodeEditor } from './directives/vCodeEditor'
+
+// Re-export core types
+export type {
+  CodeEditorOptions,
+  CodeEditorInstance,
+  EditorTheme,
+  EditorLanguage,
+  EditorEvent,
+  EditorEventHandler,
+  DiffEditorOptions,
+  CompletionProvider,
+  HoverProvider,
+  FormatProvider
+} from '@ldesign/code-editor-core'
+
+// Re-export core utilities
+export {
+  createEditor,
+  destroyEditor,
+  defaultThemes,
+  registerTheme,
+  getTheme,
+  defaultLanguages,
+  registerLanguage
+} from '@ldesign/code-editor-core'
+
+// Plugin install
 import type { App } from 'vue'
-import CodeEditorComponent from './CodeEditor.vue'
+import CodeEditor from './components/CodeEditor.vue'
+import DiffEditor from './components/DiffEditor.vue'
+import { vCodeEditor } from './directives/vCodeEditor'
 
-// 导出组件
-export const CodeEditor = CodeEditorComponent
-
-// 导出 Composable
-export { useCodeEditor, createEditor } from './useCodeEditor'
-
-// 导出类型
-export type * from '../../types'
-
-// Vue 插件安装函数
-export function install(app: App) {
-  app.component('LdCodeEditor', CodeEditorComponent)
+export interface CodeEditorPluginOptions {
+  componentPrefix?: string
 }
 
-// 默认导出
+export function install(app: App, options: CodeEditorPluginOptions = {}): void {
+  const prefix = options.componentPrefix || ''
+
+  app.component(`${prefix}CodeEditor`, CodeEditor)
+  app.component(`${prefix}DiffEditor`, DiffEditor)
+  app.directive('code-editor', vCodeEditor)
+}
+
 export default {
-  install,
-  CodeEditor: CodeEditorComponent
+  install
 }

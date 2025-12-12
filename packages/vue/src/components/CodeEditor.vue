@@ -1,233 +1,166 @@
 <template>
-  <div ref="containerRef" class="ldesign-code-editor" :class="containerClass">
-    <div v-if="loading && showLoading" class="ldesign-code-editor__loading">
-      <slot name="loading">
-        <div class="ldesign-code-editor__spinner"></div>
-        <div class="ldesign-code-editor__loading-text">{{ loadingText }}</div>
-      </slot>
-    </div>
-  </div>
+  <div ref="containerRef" class="code-editor-container" :style="containerStyle"></div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, watch, computed } from 'vue'
-import { createCodeEditor, type CodeEditor as CoreCodeEditor, type CodeEditorConfig } from '@ldesign/code-editor-core'
-import type * as Monaco from 'monaco-editor'
+import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import type { CodeEditorOptions, CodeEditorInstance } from '@ldesign/code-editor-core'
+import { createEditor, destroyEditor } from '@ldesign/code-editor-core'
 
 export interface CodeEditorProps {
   modelValue?: string
   language?: string
   theme?: string
   readOnly?: boolean
-  autoComplete?: boolean
-  folding?: boolean
   lineNumbers?: 'on' | 'off' | 'relative' | 'interval'
   minimap?: boolean
-  fontSize?: number
-  tabSize?: number
-  insertSpaces?: boolean
   wordWrap?: 'on' | 'off' | 'wordWrapColumn' | 'bounded'
-  showLoading?: boolean
-  loadingText?: string
-  options?: Partial<Monaco.editor.IStandaloneEditorConstructionOptions>
-  containerClass?: string | string[] | Record<string, boolean>
-}
-
-export interface CodeEditorEmits {
-  (e: 'update:modelValue', value: string): void
-  (e: 'change', value: string): void
-  (e: 'ready', editor: CoreCodeEditor): void
-  (e: 'focus'): void
-  (e: 'blur'): void
-  (e: 'cursorChange', position: Monaco.Position): void
+  fontSize?: number
+  fontFamily?: string
+  tabSize?: number
+  placeholder?: string
+  height?: string | number
+  width?: string | number
+  options?: Partial<CodeEditorOptions>
 }
 
 const props = withDefaults(defineProps<CodeEditorProps>(), {
   modelValue: '',
   language: 'javascript',
-  theme: 'vs-dark',
+  theme: 'vs',
   readOnly: false,
-  autoComplete: true,
-  folding: true,
   lineNumbers: 'on',
   minimap: true,
+  wordWrap: 'off',
   fontSize: 14,
   tabSize: 2,
-  insertSpaces: true,
-  wordWrap: 'off',
-  showLoading: false,
-  loadingText: '加载编辑器中...'
+  height: '300px',
+  width: '100%'
 })
 
-const emit = defineEmits<CodeEditorEmits>()
+const emit = defineEmits<{
+  'update:modelValue': [value: string]
+  'change': [value: string]
+  'focus': []
+  'blur': []
+  'save': [value: string]
+  'ready': [editor: CodeEditorInstance]
+}>()
 
-const containerRef = ref<HTMLElement>()
-const editor = ref<CoreCodeEditor>()
-const loading = ref(true)
+const containerRef = ref<HTMLElement | null>(null)
+let editorInstance: CodeEditorInstance | null = null
+let isUpdatingFromProp = false
 
-// 内部值，用于防止循环更新
-let internalValue = props.modelValue
+const containerStyle = computed(() => ({
+  height: typeof props.height === 'number' ? `${props.height}px` : props.height,
+  width: typeof props.width === 'number' ? `${props.width}px` : props.width
+}))
 
-onMounted(async () => {
+const initEditor = async () => {
   if (!containerRef.value) return
 
-  try {
-    loading.value = true
+  await nextTick()
 
-    const config: CodeEditorConfig = {
-      language: props.language,
-      theme: props.theme,
-      value: props.modelValue,
-      readOnly: props.readOnly,
-      autoComplete: props.autoComplete,
-      folding: props.folding,
-      lineNumbers: props.lineNumbers,
-      minimap: props.minimap,
-      fontSize: props.fontSize,
-      tabSize: props.tabSize,
-      insertSpaces: props.insertSpaces,
-      wordWrap: props.wordWrap,
-      monacoOptions: props.options,
-      on: {
-        ready: (ed) => {
-          emit('ready', editor.value!)
-        },
-        change: (value) => {
-          if (value !== internalValue) {
-            internalValue = value
-            emit('update:modelValue', value)
-            emit('change', value)
-          }
-        },
-        focus: () => {
-          emit('focus')
-        },
-        blur: () => {
-          emit('blur')
-        },
-        cursorChange: (position) => {
-          emit('cursorChange', position)
-        }
-      }
-    }
-
-    editor.value = createCodeEditor(containerRef.value, config)
-
-    // 延迟隐藏 loading
-    setTimeout(() => {
-      loading.value = false
-    }, 300)
-  } catch (error) {
-    console.error('Failed to initialize editor:', error)
-    loading.value = false
+  const options: CodeEditorOptions = {
+    container: containerRef.value,
+    value: props.modelValue,
+    language: props.language,
+    theme: props.theme,
+    readOnly: props.readOnly,
+    lineNumbers: props.lineNumbers,
+    minimap: props.minimap,
+    wordWrap: props.wordWrap,
+    fontSize: props.fontSize,
+    fontFamily: props.fontFamily,
+    tabSize: props.tabSize,
+    placeholder: props.placeholder,
+    ...props.options
   }
+
+  editorInstance = createEditor(options)
+
+  // Event bindings
+  editorInstance.on('change', (value) => {
+    if (isUpdatingFromProp) return
+    emit('update:modelValue', value)
+    emit('change', value)
+  })
+
+  editorInstance.on('focus', () => {
+    emit('focus')
+  })
+
+  editorInstance.on('blur', () => {
+    emit('blur')
+  })
+
+  editorInstance.on('save', (value) => {
+    emit('save', value)
+  })
+
+  emit('ready', editorInstance)
+}
+
+// Watch modelValue
+watch(() => props.modelValue, (newValue) => {
+  if (!editorInstance || editorInstance.getValue() === newValue) return
+  isUpdatingFromProp = true
+  editorInstance.setValue(newValue)
+  isUpdatingFromProp = false
+})
+
+// Watch language
+watch(() => props.language, (newValue) => {
+  editorInstance?.setLanguage(newValue)
+})
+
+// Watch theme
+watch(() => props.theme, (newValue) => {
+  editorInstance?.setTheme(newValue)
+})
+
+// Watch other options
+watch(() => ({
+  readOnly: props.readOnly,
+  lineNumbers: props.lineNumbers,
+  minimap: props.minimap,
+  wordWrap: props.wordWrap,
+  fontSize: props.fontSize,
+  fontFamily: props.fontFamily,
+  tabSize: props.tabSize
+}), (newOptions) => {
+  editorInstance?.updateOptions(newOptions)
+}, { deep: true })
+
+onMounted(() => {
+  initEditor()
 })
 
 onBeforeUnmount(() => {
-  if (editor.value) {
-    editor.value.dispose()
-    editor.value = undefined
+  if (editorInstance) {
+    destroyEditor(editorInstance)
+    editorInstance = null
   }
 })
 
-// 监听 modelValue 变化
-watch(() => props.modelValue, (newValue) => {
-  if (editor.value && newValue !== internalValue) {
-    internalValue = newValue
-    editor.value.setValue(newValue)
-  }
-})
-
-// 监听其他属性变化
-watch(() => props.language, (newValue) => {
-  if (editor.value && newValue) {
-    editor.value.setLanguage(newValue as any)
-  }
-})
-
-watch(() => props.theme, (newValue) => {
-  if (editor.value && newValue) {
-    editor.value.setTheme(newValue as any)
-  }
-})
-
-watch(() => props.readOnly, (newValue) => {
-  if (editor.value) {
-    editor.value.setReadOnly(newValue)
-  }
-})
-
-watch(() => props.fontSize, (newValue) => {
-  if (editor.value && newValue) {
-    editor.value.updateOptions({ fontSize: newValue })
-  }
-})
-
-// 暴露编辑器实例方法
+// Expose editor instance
 defineExpose({
-  editor,
-  getValue: () => editor.value?.getValue() || '',
-  setValue: (value: string) => editor.value?.setValue(value),
-  getSelection: () => editor.value?.getSelection() || '',
-  setSelection: (selection: Monaco.IRange) => editor.value?.setSelection(selection),
-  insertText: (text: string, position?: Monaco.IPosition) => editor.value?.insertText(text, position),
-  format: () => editor.value?.format(),
-  setLanguage: (language: string) => editor.value?.setLanguage(language as any),
-  setTheme: (theme: string) => editor.value?.setTheme(theme as any),
-  setReadOnly: (readOnly: boolean) => editor.value?.setReadOnly(readOnly),
-  focus: () => editor.value?.focus(),
-  getPosition: () => editor.value?.getPosition(),
-  setPosition: (position: Monaco.IPosition) => editor.value?.setPosition(position),
-  undo: () => editor.value?.undo(),
-  redo: () => editor.value?.redo(),
-  getEditor: () => editor.value?.getEditor(),
-  layout: (dimension?: Monaco.editor.IDimension) => editor.value?.layout(dimension)
+  getEditor: () => editorInstance,
+  getValue: () => editorInstance?.getValue() ?? '',
+  setValue: (value: string) => editorInstance?.setValue(value),
+  focus: () => editorInstance?.focus(),
+  blur: () => editorInstance?.blur(),
+  format: () => editorInstance?.format(),
+  undo: () => editorInstance?.undo(),
+  redo: () => editorInstance?.redo(),
+  layout: () => editorInstance?.layout()
 })
 </script>
 
-<style scoped>
-.ldesign-code-editor {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  min-height: 200px;
+<style>
+.code-editor-container {
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
   overflow: hidden;
 }
-
-.ldesign-code-editor__loading {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(30, 30, 30, 0.95);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  transition: opacity 0.3s ease;
-}
-
-.ldesign-code-editor__spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid rgba(255, 255, 255, 0.1);
-  border-top-color: #667eea;
-  border-radius: 50%;
-  animation: ldesign-spin 0.8s linear infinite;
-}
-
-@keyframes ldesign-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.ldesign-code-editor__loading-text {
-  margin-top: 20px;
-  color: #fff;
-  font-size: 14px;
-}
 </style>
-
